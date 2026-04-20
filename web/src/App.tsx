@@ -93,7 +93,7 @@ type LayoutState = {
   mobilePanel: MobilePanel;
 };
 
-const LAYOUT_STORAGE_KEY = 'hermes.chat-studio.layout.v4';
+const LAYOUT_STORAGE_KEY = 'hermes.chat-studio.layout.v5';
 
 function createId(prefix: string) {
   const suffix = typeof crypto !== 'undefined' && 'randomUUID' in crypto
@@ -105,7 +105,7 @@ function createId(prefix: string) {
 function loadLayoutState(): LayoutState {
   const fallback: LayoutState = {
     focusMode: false,
-    leftCollapsed: true,
+    leftCollapsed: false,
     rightCollapsed: true,
     mobilePanel: null,
   };
