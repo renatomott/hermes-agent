@@ -93,7 +93,7 @@ type LayoutState = {
   mobilePanel: MobilePanel;
 };
 
-const LAYOUT_STORAGE_KEY = 'hermes.chat-studio.layout.v3';
+const LAYOUT_STORAGE_KEY = 'hermes.chat-studio.layout.v4';
 
 function createId(prefix: string) {
   const suffix = typeof crypto !== 'undefined' && 'randomUUID' in crypto
@@ -105,8 +105,8 @@ function createId(prefix: string) {
 function loadLayoutState(): LayoutState {
   const fallback: LayoutState = {
     focusMode: false,
-    leftCollapsed: false,
-    rightCollapsed: false,
+    leftCollapsed: true,
+    rightCollapsed: true,
     mobilePanel: null,
   };
 
@@ -513,7 +513,7 @@ function MessageBubble({
 function CollapsibleSection({
   title,
   description,
-  defaultOpen = true,
+  defaultOpen = false,
   actions,
   children,
 }: {
@@ -655,24 +655,9 @@ function SidebarRail({
             <Badge variant="outline">{archivedCount} arquivados</Badge>
           </div>
         </CardHeader>
-        <CardContent className="min-h-0 flex-1 overflow-y-auto p-3">
-          <div className="grid gap-2">
-            {chats.slice(0, 10).map((chat) => (
-              <button
-                key={chat.id}
-                type="button"
-                onClick={() => onSelectChat(chat.id)}
-                className={cn(
-                  'w-full rounded-[1rem] border px-3 py-2 text-left text-sm transition-colors',
-                  activeChatId === chat.id ? 'border-foreground bg-foreground text-background' : 'border-border bg-card/60 hover:border-foreground/35',
-                )}
-              >
-                <p className="truncate font-medium">{chat.title}</p>
-                <p className={cn('mt-1 truncate text-[0.72rem]', activeChatId === chat.id ? 'text-background/75' : 'text-muted-foreground')}>
-                  {chat.summary}
-                </p>
-              </button>
-            ))}
+        <CardContent className="min-h-0 flex-1 p-3">
+          <div className="flex h-full items-center justify-center rounded-[1rem] border border-dashed border-border bg-card/45 px-3 text-center text-[0.72rem] leading-relaxed text-muted-foreground">
+            Painel recolhido para liberar espaço no chat.
           </div>
         </CardContent>
       </Card>
@@ -692,15 +677,14 @@ function SidebarRail({
           </Button>
         </div>
 
-        <p className="mt-3 text-sm text-muted-foreground">
-          Os atalhos rápidos foram movidos para a seção de configuração abaixo para economizar espaço.
-        </p>
+
       </CardHeader>
 
       <CardContent className="min-h-0 flex-1 space-y-4 overflow-y-auto p-4">
         <CollapsibleSection
           title="configuração rápida"
-          description="Sessão ativa e atalhos para começar sem perder espaço na tela."
+          description="Sessão ativa e atalhos para começar sem ocupar o centro da tela."
+          defaultOpen={false}
           actions={<Badge variant="outline">{sessionEmail ?? 'sessão local'}</Badge>}
         >
           <div className="grid gap-3">
@@ -734,7 +718,8 @@ function SidebarRail({
 
         <CollapsibleSection
           title="workspace ativo"
-          description="Separe os assuntos e mantenha o contexto por conversa."
+          description="Troque de assunto sem abrir outra superfície."
+          defaultOpen={false}
           actions={<Badge variant="outline">{activeWorkspaceChatsCount} chats</Badge>}
         >
           <div className="flex flex-wrap gap-2">
@@ -763,7 +748,8 @@ function SidebarRail({
 
         <CollapsibleSection
           title="buscar"
-          description="Filtre chats, mensagens e históricos."
+          description="Filtre chats, mensagens e históricos sem ocupar espaço o tempo todo."
+          defaultOpen={false}
           actions={<Badge variant="outline">{activeWorkspaceChatsCount + archivedCount}</Badge>}
         >
           <div className="flex items-center gap-2">
@@ -789,6 +775,7 @@ function SidebarRail({
         <CollapsibleSection
           title="lista de chats"
           description={showArchivedChats ? 'Mostrando ativos e arquivados.' : 'Mostrando apenas ativos.'}
+          defaultOpen={true}
           actions={<Badge variant="outline">{chats.length}</Badge>}
         >
           <div className="grid gap-2">
@@ -913,13 +900,9 @@ function MemoryRail({
             onChange={onImportState}
           />
         </CardHeader>
-        <CardContent className="min-h-0 flex-1 overflow-y-auto p-3">
-          <div className="grid gap-2">
-            {allMemories.slice(0, 10).map((memory) => (
-              <div key={memory.id} className="rounded-[1rem] border border-border bg-card/60 p-3 text-sm">
-                <p className="line-clamp-3 text-[0.8rem] leading-relaxed text-foreground">{memory.content}</p>
-              </div>
-            ))}
+        <CardContent className="min-h-0 flex-1 p-3">
+          <div className="flex h-full items-center justify-center rounded-[1rem] border border-dashed border-border bg-card/45 px-3 text-center text-[0.72rem] leading-relaxed text-muted-foreground">
+            Memória recolhida para deixar a conversa legível.
           </div>
         </CardContent>
       </Card>
@@ -962,7 +945,8 @@ function MemoryRail({
       <CardContent className="min-h-0 flex-1 space-y-4 overflow-y-auto p-4">
         <CollapsibleSection
           title="adicionar memória"
-          description="Capture decisões importantes sem sair do chat."
+          description="Capture decisões importantes sem disputar atenção com o chat."
+          defaultOpen={false}
           actions={<Badge variant="outline">{activeChat?.title ?? 'sem chat'}</Badge>}
         >
           <textarea
@@ -984,7 +968,8 @@ function MemoryRail({
 
         <CollapsibleSection
           title="memórias"
-          description="Global + por chat, editável no navegador."
+          description="Global + por chat, editável quando necessário."
+          defaultOpen={true}
           actions={<Badge variant="outline">{allMemories.length}</Badge>}
         >
           <div className="grid gap-2">
@@ -1138,41 +1123,43 @@ function ChatPane({
               )}
             </div>
 
-            {!compactHeader && (
-              <div className="flex flex-wrap items-center gap-2">
-                {activeChat && (
-                  <>
-                    <Button type="button" variant="outline" className="h-10 px-3" onClick={onCopyLastReply} disabled={!chatMessages.some((message) => message.role === 'assistant')}>
-                      <Copy className="h-4 w-4" />
-                      copiar última
-                    </Button>
-                    <Button type="button" variant="outline" className="h-10 px-3" onClick={onExportChat}>
-                      <Download className="h-4 w-4" />
-                      exportar
-                    </Button>
-                    <Button type="button" variant="outline" className="h-10 px-3" onClick={onPinChat}>
-                      {activeChat.pinned ? <PinOff className="h-4 w-4" /> : <Pin className="h-4 w-4" />}
-                      {activeChat.pinned ? 'desafixar' : 'fixar'}
-                    </Button>
-                    <Button type="button" variant="outline" className="h-10 px-3" onClick={onArchiveChat}>
-                      <Archive className="h-4 w-4" />
-                      arquivar
-                    </Button>
-                    <Button type="button" variant="outline" className="h-10 px-3 text-destructive" onClick={() => onDeleteChat(activeChat.id)}>
-                      <Trash2 className="h-4 w-4" />
-                      apagar chat
-                    </Button>
-                    <Button type="button" variant="outline" className="h-10 px-3" onClick={onRenameChat}>
-                      <PencilLine className="h-4 w-4" />
-                      renomear
-                    </Button>
-                    <Button type="button" variant="outline" className="h-10 px-3 text-destructive" onClick={onClearChat}>
-                      <Trash2 className="h-4 w-4" />
-                      limpar
-                    </Button>
-                  </>
-                )}
-              </div>
+            {!compactHeader && activeChat && (
+              <CollapsibleSection
+                title="ações rápidas"
+                description="Copiar, exportar e manter o chat organizado sem poluir a leitura."
+                defaultOpen={false}
+              >
+                <div className="flex flex-wrap items-center gap-2">
+                  <Button type="button" variant="outline" className="h-10 px-3" onClick={onCopyLastReply} disabled={!chatMessages.some((message) => message.role === 'assistant')}>
+                    <Copy className="h-4 w-4" />
+                    copiar última
+                  </Button>
+                  <Button type="button" variant="outline" className="h-10 px-3" onClick={onExportChat}>
+                    <Download className="h-4 w-4" />
+                    exportar
+                  </Button>
+                  <Button type="button" variant="outline" className="h-10 px-3" onClick={onPinChat}>
+                    {activeChat.pinned ? <PinOff className="h-4 w-4" /> : <Pin className="h-4 w-4" />}
+                    {activeChat.pinned ? 'desafixar' : 'fixar'}
+                  </Button>
+                  <Button type="button" variant="outline" className="h-10 px-3" onClick={onArchiveChat}>
+                    <Archive className="h-4 w-4" />
+                    arquivar
+                  </Button>
+                  <Button type="button" variant="outline" className="h-10 px-3" onClick={onRenameChat}>
+                    <PencilLine className="h-4 w-4" />
+                    renomear
+                  </Button>
+                  <Button type="button" variant="outline" className="h-10 px-3 text-destructive" onClick={onClearChat}>
+                    <Trash2 className="h-4 w-4" />
+                    limpar
+                  </Button>
+                  <Button type="button" variant="outline" className="h-10 px-3 text-destructive" onClick={() => onDeleteChat(activeChat.id)}>
+                    <Trash2 className="h-4 w-4" />
+                    apagar chat
+                  </Button>
+                </div>
+              </CollapsibleSection>
             )}
           </div>
         </div>
