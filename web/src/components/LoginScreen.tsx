@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import { ArrowRight, BrainCircuit, FolderPlus, LockKeyhole, Menu, Search, Settings, Sparkles, Wand2, MessageSquarePlus } from 'lucide-react';
+import { ArrowRight, BrainCircuit, LockKeyhole, Sparkles, Wand2 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -9,14 +9,6 @@ export interface LoginScreenProps {
   defaultEmail?: string;
   onLogin: (payload: { email: string; password: string; remember: boolean }) => Promise<void>;
 }
-
-const navigationItems = [
-  { label: 'Chats', icon: MessageSquarePlus, active: true, hint: 'troca rápida entre sessões' },
-  { label: 'Workspaces', icon: FolderPlus, hint: 'assuntos agrupados por tema' },
-  { label: 'Memory', icon: BrainCircuit, hint: 'memória global + por chat' },
-  { label: 'Search', icon: Search, hint: 'encontrar contexto e mensagens' },
-  { label: 'Settings', icon: Settings, hint: 'preferências e acesso' },
-];
 
 export function LoginScreen({ defaultEmail = 'renato.mott@gmail.com', onLogin }: LoginScreenProps) {
   const [email, setEmail] = useState(defaultEmail);
@@ -32,7 +24,7 @@ export function LoginScreen({ defaultEmail = 'renato.mott@gmail.com', onLogin }:
       <div className="fixed inset-0 pointer-events-none bg-[radial-gradient(circle_at_12%_12%,rgba(251,191,36,0.16),transparent_28%),radial-gradient(circle_at_88%_16%,rgba(16,185,129,0.1),transparent_24%),radial-gradient(circle_at_50%_100%,rgba(59,130,246,0.08),transparent_30%)]" />
       <div className="fixed inset-0 pointer-events-none opacity-[0.04] mix-blend-multiply bg-[repeating-linear-gradient(90deg,transparent_0,transparent_27px,rgba(15,23,42,0.08)_28px),repeating-linear-gradient(0deg,transparent_0,transparent_27px,rgba(15,23,42,0.06)_28px)]" />
 
-      <div className="relative mx-auto grid min-h-full max-w-7xl grid-cols-1 lg:grid-cols-[1.08fr_0.92fr]">
+      <div className="relative mx-auto grid min-h-full max-w-7xl grid-cols-1 lg:grid-cols-[1.1fr_0.9fr]">
         <section className="order-2 flex items-start px-4 py-6 sm:px-6 sm:py-10 lg:order-1 lg:items-center lg:px-12">
           <div className="max-w-xl">
             <div className="mb-6 flex items-center gap-3">
@@ -43,58 +35,23 @@ export function LoginScreen({ defaultEmail = 'renato.mott@gmail.com', onLogin }:
                 <p className="font-expanded text-[0.72rem] uppercase tracking-[0.3em] text-[color:var(--color-muted-foreground)]">
                   Hermes chat studio
                 </p>
-                <h1 className="mt-1 font-display text-3xl leading-tight sm:text-5xl">
-                  Interface com navegação lateral e memória persistente
+                <h1 className="mt-1 font-display text-2xl leading-tight sm:text-3xl">
+                  Chat Studio Hermes Agent de Mott
                 </h1>
               </div>
             </div>
 
-            <p className="max-w-lg text-base leading-relaxed text-[color:var(--color-muted-foreground)] sm:text-lg">
-              A tela pública já antecipa a estrutura final: chats e workspaces à esquerda, conversa no centro e memória/contexto como apoio.
-            </p>
-
             <div className="mt-8 grid gap-3 sm:grid-cols-3">
               {[
-                ['Chats', 'troca rápida entre sessões'],
-                ['Workspaces', 'assuntos agrupados por tema'],
-                ['Memory', 'global + por chat'],
+                ['Memória', 'global + por chat'],
+                ['Multimodal', 'texto, imagem e áudio'],
+                ['Persistência', 'login salvo neste dispositivo'],
               ].map(([title, desc]) => (
                 <div key={title} className="rounded-[1.1rem] border border-[color:var(--color-border)] bg-[color:var(--color-card)]/55 p-4">
                   <Badge variant="outline" className="text-[0.56rem]">{title}</Badge>
                   <p className="mt-2 text-sm text-[color:var(--color-muted-foreground)]">{desc}</p>
                 </div>
               ))}
-            </div>
-
-            <div className="mt-6 rounded-[1.4rem] border border-[color:var(--color-border)] bg-[color:var(--color-card)]/52 p-4 shadow-[0_18px_60px_rgba(0,0,0,0.12)] backdrop-blur-sm">
-              <div className="mb-3 flex items-center gap-2 text-[0.72rem] uppercase tracking-[0.2em] text-[color:var(--color-muted-foreground)]">
-                <Menu className="h-4 w-4" />
-                painel esquerdo
-              </div>
-              <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2">
-                {navigationItems.map((item) => (
-                  <div
-                    key={item.label}
-                    className={cn(
-                      'rounded-[1rem] border px-3 py-3 transition-colors',
-                      item.active
-                        ? 'border-[color:var(--color-foreground)] bg-[color:var(--color-foreground)] text-[color:var(--color-background)]'
-                        : 'border-[color:var(--color-border)] bg-background/30 text-[color:var(--color-foreground)]',
-                    )}
-                  >
-                    <div className="flex items-center gap-2 text-sm font-medium">
-                      <item.icon className="h-4 w-4" />
-                      {item.label}
-                    </div>
-                    <p className={cn('mt-1 text-[0.76rem] leading-relaxed', item.active ? 'text-[color:var(--color-background)]/75' : 'text-[color:var(--color-muted-foreground)]')}>
-                      {item.hint}
-                    </p>
-                  </div>
-                ))}
-              </div>
-              <div className="mt-3 rounded-[1rem] border border-dashed border-[color:var(--color-border)] bg-background/20 px-3 py-3 text-sm text-[color:var(--color-muted-foreground)]">
-                A navegação fica fora do centro. O chat fica mais alto, mais limpo e mais legível.
-              </div>
             </div>
 
             <div className="mt-8 flex flex-wrap items-center gap-3 text-[0.78rem] uppercase tracking-[0.2em] text-[color:var(--color-muted-foreground)]">
